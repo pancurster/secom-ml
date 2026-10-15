@@ -1,0 +1,11 @@
+[project]
+name = "secom-ml"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+dependencies = [
+    "numpy",
+    "pandas>=3.0.0",
+    "scikit-learn",
+    "ipykernel"
+]

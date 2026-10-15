@@ -55,7 +55,6 @@ def load_secom_data(data_path, verbose=False) -> pd.DataFrame:
         na_values=['NaN'],
         float_precision='high',
         dtype_backend='numpy_nullable',
-        verbose=verbose,
         ).add_prefix('x')
     return df
 
@@ -70,6 +69,5 @@ def load_secom_labels(labels_path, verbose=False) -> pd.DataFrame:
         date_format='%d/%m/%Y %H:%M:%S',
         cache_dates=True,
         dtype_backend='numpy_nullable',
-        verbose=verbose,
         )
     return df
