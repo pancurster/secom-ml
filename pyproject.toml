@@ -14,5 +14,10 @@ dependencies = [
     "ipykernel"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pylint"
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]
