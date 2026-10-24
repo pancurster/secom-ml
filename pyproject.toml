@@ -11,6 +11,7 @@ dependencies = [
     "ipykernel",
     "matplotlib",
     "numpy",
+    "openpyxl",
     "pandas>=3.0.0",
     "scikit-learn",
 ]
