@@ -1,3 +1,6 @@
+"""Conversion functions for data types in the SECOM dataset."""
+import pandas as pd
+
 def convert_pass_to_boolean(df, column_name='pass'):
     """
     Convert a `pass` column in the DataFrame to boolean type.
