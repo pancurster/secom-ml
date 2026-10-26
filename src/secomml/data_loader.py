@@ -28,7 +28,8 @@ def load_secom(zip_file_path: str) -> pd.DataFrame:
         axis=1,
         )
 
-    return secom, secom_labels_df, secom_data_df
+    #return secom, secom_labels_df, secom_data_df
+    return secom
 
 def unzip_raw_data(zip_file_path: str, destination_path: str = None) -> list:
     '''

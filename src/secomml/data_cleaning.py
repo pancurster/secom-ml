@@ -1,7 +1,7 @@
 """Contains functions for data cleaning and preprocessing."""
 import pandas as pd
 
-def drop_zero_variance_columns(df):
+def drop_zero_variance_columns(df, return_droped=False):
     """
     Drop columns with zero variance from the DataFrame.
 
@@ -16,4 +16,6 @@ def drop_zero_variance_columns(df):
     xnames = df_copy.columns.str.startswith("x")
     xvar = df_copy.loc[:, xnames]
     zero_variance_columns = xvar.loc[:, xvar.var() == 0].columns
-    return df_copy.drop(columns=zero_variance_columns), zero_variance_columns.tolist()
+    if return_droped:
+        return df_copy.drop(columns=zero_variance_columns), zero_variance_columns.tolist()
+    return df_copy.drop(columns=zero_variance_columns)
