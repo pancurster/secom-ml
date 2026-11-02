@@ -19,7 +19,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pylint"
+    "pylint",
+    "pytest",
 ]
 
 [tool.setuptools.packages.find]
