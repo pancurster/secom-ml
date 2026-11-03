@@ -38,4 +38,4 @@ from secomml.data_loader import load_secom
 combined dataframe, labels dataframe, and sensor-data dataframe:
 
 ```python
-secom, labels, data = load_secom("/content/secom.zip")
+secom = load_secom("/content/secom.zip")

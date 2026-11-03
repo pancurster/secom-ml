@@ -10,11 +10,11 @@ requires-python = ">=3.11"
 dependencies = [
     "ipykernel",
     "matplotlib",
-    "numpy",
-    "openpyxl",
-    "pandas>=3.0.0",
-    "scikit-learn",
-    "seaborn",
+    "numpy==2.5.4",
+    "openpyxl>=3.1.5",
+    "pandas==3.1.0",
+    "scikit-learn==1.9.1",
+    "seaborn>=0.13.2",
 ]
 
 [project.optional-dependencies]

@@ -82,7 +82,7 @@ def load_raw_secom(zip_file_path: str) -> pd.DataFrame:
         )
     return secom
 
-def unzip_raw_data(zip_file_path: str, destination_path: str = None) -> list:
+def unzip_raw_data(zip_file_path: str, destination_path: str = '') -> list:
     '''
     Unzip archive. Return paths list of extracted files.
     '''
