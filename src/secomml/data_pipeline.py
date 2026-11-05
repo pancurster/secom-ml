@@ -3,8 +3,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import Normalizer
 
-def secom_simple_imputer(df):
-    return SimpleImputer(strategy='mean').set_output(transform='pandas').fit_transform(df)
+def secom_simple_imputer(df, strategy='mean'):
+    return SimpleImputer(strategy=strategy).set_output(transform='pandas').fit_transform(df)
 
 def secom_standard_scaler(df):
     return StandardScaler().set_output(transform='pandas').fit_transform(df)
