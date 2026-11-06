@@ -21,6 +21,7 @@ dependencies = [
 dev = [
     "pylint",
     "pytest",
+    "nbdim",
 ]
 
 [tool.setuptools.packages.find]
