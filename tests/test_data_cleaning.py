@@ -2,7 +2,31 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from secomml.data_cleaning import drop_zero_percentage_columns
+from secomml.data_cleaning import MaxNanFeatureSelector, drop_zero_percentage_columns
+
+
+def test_nan_feature_selector_drops_features_with_more_than_90_percent_missing():
+    frame = pd.DataFrame(
+        {
+            "keep": [1.0, np.nan, 2.0, np.nan, 3.0, np.nan, 4.0, np.nan, 5.0, np.nan],
+            "drop": [np.nan] * 9 + [1.0],
+        }
+    )
+
+    selector = MaxNanFeatureSelector()
+    result = selector.fit_transform(frame)
+
+    assert selector.get_feature_names_out().tolist() == ["keep"]
+    assert result.shape == (10, 1)
+    assert np.isnan(result).any()
+
+
+def test_nan_feature_selector_supports_numpy_arrays():
+    values = np.array([[1.0, np.nan], [2.0, np.nan], [3.0, np.nan]])
+
+    result = MaxNanFeatureSelector().fit_transform(values)
+
+    np.testing.assert_array_equal(result, values[:, [0]])
 
 
 def test_drops_columns_with_only_zero_values():

@@ -1,6 +1,9 @@
 """Contains functions for data cleaning and preprocessing."""
 import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator
+from sklearn.feature_selection import SelectorMixin
+from sklearn.utils.validation import validate_data
 
 def drop_zero_variance_columns(df, return_droped=False):
     """
@@ -13,6 +16,26 @@ def drop_zero_variance_columns(df, return_droped=False):
     if return_droped:
         return df_copy.drop(columns=zero_variance_columns), zero_variance_columns.tolist()
     return df_copy.drop(columns=zero_variance_columns)
+
+class MaxNanFeatureSelector(SelectorMixin, BaseEstimator):
+    def __init__(self, *, max_nan=0.9):
+        self.max_nan = max_nan
+
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.allow_nan = True
+        return tags
+
+    def fit(self, X, y=None):
+        Xcolumns = X.columns
+        X = validate_data(self, X, reset=True, dtype=None, ensure_all_finite="allow-nan")
+        self.support_mask_ = np.asarray(pd.isna(X).mean(axis=0) < self.max_nan)
+        self.removed_mask_ = ~self.support_mask_
+        self.fature_names_removed_ = Xcolumns[self.removed_mask_]
+        return self
+
+    def _get_support_mask(self):
+        return self.support_mask_
 
 def drop_zero_percentage_columns(df, ths=0.98, na_policy='as_zero'):
     """
@@ -46,4 +69,3 @@ def zero_variance_columns(df):
     """
     zv_names = pd.Series([col for col in df.columns if df[col].var() == 0])
     return zv_names
-
