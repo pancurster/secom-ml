@@ -27,11 +27,30 @@ class MaxNanFeatureSelector(SelectorMixin, BaseEstimator):
         return tags
 
     def fit(self, X, y=None):
-        Xcolumns = X.columns
+        Xcolumns = X.columns if type(X) == pd.DataFrame else []
         X = validate_data(self, X, reset=True, dtype=None, ensure_all_finite="allow-nan")
         self.support_mask_ = np.asarray(pd.isna(X).mean(axis=0) < self.max_nan)
         self.removed_mask_ = ~self.support_mask_
-        self.fature_names_removed_ = Xcolumns[self.removed_mask_]
+        self.feature_names_removed_ = Xcolumns[self.removed_mask_] if len(Xcolumns) else 'NA'
+        return self
+
+    def _get_support_mask(self):
+        return self.support_mask_
+
+class MaxConstFeatureSelector(SelectorMixin, BaseEstimator):
+    def __init__(self, *, max_const_ratio=0.98, ref_const=None):
+        self.max_const_ratio = max_const_ratio
+        self.ref_const = ref_const
+
+    def fit(self, X, y=None):
+        X_cols = X.columns if type(X) == pd.DataFrame else []
+        X_n = X.shape[0]
+        X = validate_data(self, X, reset=True, dtype=None)
+        X_consts = np.median(X, axis=0) if self.ref_const == None else self.ref_const
+        self.const_ratio_ = 1 - (np.count_nonzero(X - X_consts, axis=0) / X_n)
+        self.support_mask_ = self.const_ratio_ < self.max_const_ratio
+        self.removed_mask_ = ~self.support_mask_
+        self.feature_names_removed_ = X_cols[self.removed_mask_] if len(X_cols) else 'NA'
         return self
 
     def _get_support_mask(self):
