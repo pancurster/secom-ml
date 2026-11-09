@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from secomml.data_cleaning import MaxNanFeatureSelector, MaxConstFeatureSelector, drop_zero_percentage_columns
+from secomml.data_cleaning import MaxNanThreshold, MaxConstThreshold, drop_zero_percentage_columns
 
 
 def test_max_nan_feature_selector_drops_features_with_more_than_90_percent_missing():
@@ -13,10 +13,11 @@ def test_max_nan_feature_selector_drops_features_with_more_than_90_percent_missi
         }
     )
 
-    selector = MaxNanFeatureSelector()
+    selector = MaxNanThreshold(threshold=0.90)
     result = selector.fit_transform(frame)
 
     assert selector.get_feature_names_out().tolist() == ["keep"]
+    assert selector.feature_names_removed_ == ["drop"]
     assert result.shape == (10, 1)
     assert np.isnan(result).any()
 
@@ -24,7 +25,7 @@ def test_max_nan_feature_selector_drops_features_with_more_than_90_percent_missi
 def test_max_nan_feature_selector_supports_numpy_arrays():
     values = np.array([[1.0, np.nan], [2.0, np.nan], [3.0, np.nan]])
 
-    result = MaxNanFeatureSelector().fit_transform(values)
+    result = MaxNanThreshold(threshold=0.9).fit_transform(values)
 
     np.testing.assert_array_equal(result, values[:, [0]])
 
@@ -38,10 +39,11 @@ def test_max_const_feature_selector_drops_features_with_more_than_90_percent_con
         }
     )
 
-    selector = MaxConstFeatureSelector(max_const_ratio=0.9)
+    selector = MaxConstThreshold(threshold=0.9)
     result = selector.fit_transform(frame)
 
     assert selector.get_feature_names_out().tolist() == ["keep"]
+    assert (selector.feature_names_removed_ == ["drop1", "drop2"]).all()
     assert result.shape == (10, 1)
 
 def test_max_const_feature_selector_exception_when_nans():
@@ -52,7 +54,7 @@ def test_max_const_feature_selector_exception_when_nans():
         }
     )
 
-    selector = MaxConstFeatureSelector(max_const_ratio=0.9)
+    selector = MaxConstThreshold(threshold=0.9)
 
     with pytest.raises(ValueError, match="Input X contains NaN"):
         selector.fit_transform(frame)
@@ -66,7 +68,7 @@ def test_max_const_feature_selector_supports_numpy_arrays():
         axis=1
     )
 
-    result = MaxConstFeatureSelector(max_const_ratio=0.9).fit_transform(values)
+    result = MaxConstThreshold(threshold=0.9).fit_transform(values)
     np.testing.assert_array_equal(result, values[:, [2]])
 
 def test_drops_columns_with_only_zero_values():
