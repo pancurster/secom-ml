@@ -71,6 +71,25 @@ def test_max_const_feature_selector_supports_numpy_arrays():
     result = MaxConstThreshold(threshold=0.9).fit_transform(values)
     np.testing.assert_array_equal(result, values[:, [2]])
 
+def test_max_const_feature_selector_drops_features_with_more_than_90_percent_const_fit():
+
+    frame = pd.DataFrame(
+        {
+            "keep": np.arange(10),
+            "drop1": [0.0] * 9 + [10.0],
+            "drop2": [2.0] * 9 + [10.0],
+        }
+    )
+
+    y = np.array([True] * 9 + [False])
+
+    selector = MaxConstThreshold(threshold=0.9)
+    result = selector.fit_transform(frame, y)
+
+    assert selector.get_feature_names_out().tolist() == ["keep"]
+    assert (selector.feature_names_removed_ == ["drop1", "drop2"]).all()
+    assert result.shape == (10, 1)
+
 def test_drops_columns_with_only_zero_values():
 	frame = pd.DataFrame(
 		{

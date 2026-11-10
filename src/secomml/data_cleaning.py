@@ -4,6 +4,8 @@ from numbers import Real
 import numpy as np
 import pandas as pd
 
+from scipy.stats import fisher_exact
+from scipy.stats import chi2_contingency
 from sklearn.base import BaseEstimator
 from sklearn.feature_selection import SelectorMixin
 from sklearn.utils.validation import validate_data
@@ -65,6 +67,20 @@ class MaxConstThreshold(SelectorMixin, BaseEstimator):
 
         self.const_ratio_ = 1 - (np.count_nonzero(X - X_consts, axis=0) / X_n)
         self.removed_mask_ = self.const_ratio_ >= self.threshold
+
+        if type(y) != type(None):
+            X_anomaly = ~np.isclose(X[:,self.removed_mask_], X_consts[self.removed_mask_])
+            X_anomaly_names = X_cols[self.removed_mask_]
+            self.X_fisher = pd.DataFrame(index=['odds','p_value','ct'])
+            self.fisher_p_value_ = np.zeros_like(X_anomaly_names)
+            p_value_ths = 0.0005
+            for idx, (col, name) in enumerate(zip(X_anomaly.T, X_anomaly_names)):
+                # Fisher
+                ct = pd.crosstab(col, y)
+                odds_ratio, p_value = fisher_exact(ct)
+                self.fisher_p_value_[idx] = p_value
+                self.X_fisher[name] = [odds_ratio, p_value, ct]
+
         self.support_mask_ = ~self.removed_mask_
         self.feature_names_removed_ = X_cols[self.removed_mask_] if len(X_cols) else 'NA'
         return self
