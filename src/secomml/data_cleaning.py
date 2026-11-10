@@ -29,6 +29,11 @@ class MaxNanThreshold(SelectorMixin, BaseEstimator):
     def __init__(self, *, threshold=0.0):
         self.threshold = threshold
 
+    def __sklearn_tags__(self):
+        tags = super().__sklearn_tags__()
+        tags.input_tags.allow_nan = True
+        return tags
+
     def fit(self, X, y=None):
         X_cols = X.columns if type(X) == pd.DataFrame else []
         X = validate_data(self, X, reset=True, dtype=None, ensure_all_finite="allow-nan")
