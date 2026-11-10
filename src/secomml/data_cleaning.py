@@ -5,25 +5,29 @@ import numpy as np
 import pandas as pd
 
 from scipy.stats import fisher_exact
-from scipy.stats import chi2_contingency
 from sklearn.base import BaseEstimator
 from sklearn.feature_selection import SelectorMixin
 from sklearn.utils.validation import validate_data
 from sklearn.utils._param_validation import Interval
 
-class MaxNanThreshold(SelectorMixin, BaseEstimator):
+class DropColumns(SelectorMixin, BaseEstimator):
+    def __init__(self, columns=None):
+        self.columns = columns
+    def fit(self, X, y=None):
+        X = validate_data(self, X, reset=True, dtype=None, ensure_2d=False,
+                          skip_check_array=True, ensure_all_finite="allow-nan")
+        self.feature_names_in_ = X.columns
+        return self
+    def transform(self, X):
+        return X.drop(columns=self.columns)
+    def _get_support_mask(self):
+        return [c not in self.columns for c in self.feature_names_in_]
 
-    _parameter_constraints: dict = {
-        "threshold": [Interval(Real, 0, 1, closed="both")]
-    }
+class MaxNanThreshold(SelectorMixin, BaseEstimator):
+    _parameter_constraints: dict = { "threshold": [Interval(Real, 0, 1, closed="both")] }
 
     def __init__(self, *, threshold=0.0):
         self.threshold = threshold
-
-    def __sklearn_tags__(self):
-        tags = super().__sklearn_tags__()
-        tags.input_tags.allow_nan = True
-        return tags
 
     def fit(self, X, y=None):
         X_cols = X.columns if type(X) == pd.DataFrame else []
@@ -37,10 +41,7 @@ class MaxNanThreshold(SelectorMixin, BaseEstimator):
         return self.support_mask_
 
 class MaxConstThreshold(SelectorMixin, BaseEstimator):
-
-    _parameter_constraints: dict = {
-        "threshold": [Interval(Real, 0, 1, closed="both")]
-    }
+    _parameter_constraints: dict = { "threshold": [Interval(Real, 0, 1, closed="both")] }
 
     def __init__(self, *, threshold=0.98):
         self.threshold = threshold
