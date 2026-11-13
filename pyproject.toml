@@ -9,6 +9,7 @@ requires-python = ">=3.11"
 
 dependencies = [
     "ipykernel",
+    "joblib",
     "matplotlib",
     "numpy==2.5.4",
     "openpyxl>=3.1.5",
@@ -19,9 +20,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "nbdime",
     "pylint",
     "pytest",
-    "nbdime",
 ]
 
 [tool.setuptools.packages.find]
