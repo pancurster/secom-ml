@@ -17,17 +17,11 @@ def convert_to_optimal_integer_type(df):
     """
     Convert integer types in 'df' to its optimal integer size type
     """
-    dtypes_prio = [pd.UInt8Dtype(), pd.UInt16Dtype(), pd.UInt32Dtype(), pd.UInt64Dtype(),
-                   pd.Int8Dtype(),  pd.Int16Dtype(),  pd.Int32Dtype(),  pd.Int64Dtype()]
-
     df_copy = df.copy()
-    dfint = df_copy.select_dtypes(include=np.integer)
-    for col in dfint.columns:
-        for new_type in dtypes_prio:
-            info = np.iinfo(new_type.type)
-            if dfint[col].dropna().between(info.min, info.max).all():
-                df_copy[col] = dfint[col].astype(new_type)
-                break # inner for
+    df_int = df_copy.select_dtypes(include=np.integer)
+    for col in df_int.columns:
+        downcast_type = 'signed' if any(df_int[col] < 0) else 'unsigned'
+        df_copy[col] = pd.to_numeric(df_int[col], downcast=downcast_type, dtype_backend='numpy_nullable')
     return df_copy
 
 def convert_column_to_boolean(df, column_name='faulty'):

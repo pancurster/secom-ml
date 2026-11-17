@@ -7,9 +7,12 @@ from secomml.data_loader import convert_to_optimal_integer_type
 @pytest.mark.parametrize(
 	("values", "expected_dtype"),
 	[
+		([0, 1, 2*128-1], pd.UInt8Dtype()),
 		([-128, 0, 127], pd.Int8Dtype()),
-		([-129, 0, 128], pd.Int16Dtype()),
-		([-32_769, 0, 32_768], pd.Int32Dtype()),
+		([0, 1, 2*32_768-1], pd.UInt16Dtype()),
+		([-32_768, 0, 32_767], pd.Int16Dtype()),
+		([0, 1, 2*2_147_483_648-1], pd.UInt32Dtype()),
+		([-2_147_483_648, 0, 2_147_483_647], pd.Int32Dtype()),
 		([-2_147_483_649, 0, 2_147_483_648], pd.Int64Dtype()),
 	],
 )
