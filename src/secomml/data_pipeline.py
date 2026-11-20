@@ -9,11 +9,11 @@ from secomml.data_cleaning import (DropColumns, MaxNanThreshold, MaxConstThresho
 
 def secom_create_cleanup_pipe(config=None, output='pandas'):
     return Pipeline([
-        ('feat_drop', DropColumns(columns=['timestamp'])),
-        ('0_variance_drop', VarianceThreshold(threshold=0.0)),
-        ('nan_ths_drop', MaxNanThreshold(threshold=0.8)),
+        ('column_drop', DropColumns(columns=['timestamp'])),
+        ('ths_variance_drop', VarianceThreshold(threshold=0.0)),
+        ('ths_nan_drop', MaxNanThreshold(threshold=0.8)),
         ('imputer', SimpleImputer(strategy='median')),
-        ('const_ths_drop', MaxConstThreshold(threshold=0.98))
+        ('ths_const_drop', MaxConstThreshold(threshold=0.98))
     ]).set_output(transform=output)
 
 def secom_simple_imputer(df, strategy='mean'):
